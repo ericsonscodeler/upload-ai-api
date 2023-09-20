@@ -1,0 +1,38 @@
+# @name get-prompt
+GET http://localhost:3333/prompts
+
+###
+
+# @name upload-video
+POST http://localhost:3333/videos
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="iphone.mp3"
+Content-Type: audio/mpeg
+
+< ./iphone.mp3
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# @name create-transcription
+POST http://localhost:3333/videos/45afe1cc-0a40-4cd6-ac72-84d1d7c55fe0/transcription
+Content-Type: application/json
+
+{
+    "prompt": "iphone, novo , apple, iphone 15, tecnologia"
+}
+
+
+###
+
+# @name generate-ai-completion
+POST http://localhost:3333/ai/complete
+Content-Type: application/json
+
+{
+    "videoId": "45afe1cc-0a40-4cd6-ac72-84d1d7c55fe0",
+    "temperature": 0.5,
+    "template": "Gere um resumo sucinto da transcrição do video informada a seguir: ''' {transcription} '''"
+}
