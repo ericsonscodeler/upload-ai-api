@@ -9,11 +9,11 @@ export async function generateAiCompletionRoute(app: FastifyInstance){
 
     const bodySchema = z.object({
         videoId: z.string().uuid(),
-        template: z.string(),
+        prompt: z.string(),
         temperature: z.number().min(0).max(1).default(0.5)
     })
 
-    const {videoId,temperature,template} = bodySchema.parse(request.body)
+    const {videoId,temperature,prompt} = bodySchema.parse(request.body)
 
     const video = await prisma.video.findUniqueOrThrow({
         where: {
@@ -27,7 +27,7 @@ export async function generateAiCompletionRoute(app: FastifyInstance){
         })
     }
 
-    const promptMessage = template.replace('{transcription}', video.transcription)
+    const promptMessage = prompt.replace('{transcription}', video.transcription)
 
     const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo-16k',
@@ -39,8 +39,6 @@ export async function generateAiCompletionRoute(app: FastifyInstance){
             }
         ]
     })
-
-    return response
-
+    return response.choices[0].message.content
   })
 }
